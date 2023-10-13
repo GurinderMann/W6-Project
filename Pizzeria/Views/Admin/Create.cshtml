@@ -1,0 +1,57 @@
+﻿@model Pizzeria.Models.T_Prodotti
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title">Aggiungi una nuova pizza</h2>
+
+                    @using (Html.BeginForm("Create", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Nome, htmlAttributes: new { @class = "control-label" })
+                            @Html.EditorFor(model => model.Nome, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Nome, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Costo, htmlAttributes: new { @class = "control-label" })
+                            @Html.EditorFor(model => model.Costo, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Costo, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Foto, htmlAttributes: new { @class = "control-label" })
+                            <input type="file" name="Img" id="Img" class="form-control" />
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.TempoConsegna, htmlAttributes: new { @class = "control-label" })
+                            @Html.EditorFor(model => model.TempoConsegna, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.TempoConsegna, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Ingredienti, htmlAttributes: new { @class = "control-label" })
+                            @Html.TextAreaFor(model => model.Ingredienti, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Ingredienti, "", new { @class = "text-danger" })
+                        </div>
+
+
+                        <div class="form-group">
+                            <input type="submit" value="Create" class="btn btn-primary mt-3" />
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

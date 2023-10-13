@@ -1,0 +1,23 @@
+﻿@model Pizzeria.Models.T_Prodotti
+
+@{
+    ViewBag.Title = "Elimina";
+   
+}
+
+<h2>Elimina Prodotto</h2>
+
+<div>
+    <h4>Sei sicuro di voler eliminare il prodotto '@Model.Nome'?</h4>
+    <div>
+        @using (Html.BeginForm("Elimina", "Admin", new { id = Model.IdProdotto }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <input type="submit" value="Elimina" class="btn btn-danger" />
+                @Html.ActionLink("Annulla", "Index", "Admin", null, new { @class = "btn btn-primary" })
+            </div>
+        }
+    </div>
+</div>

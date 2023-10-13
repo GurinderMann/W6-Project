@@ -1,0 +1,102 @@
+﻿
+@{
+    ViewBag.Title = "Ricerca";
+}
+
+
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h2 class="card-title">Ricerca Avanzata</h2>
+                    <div class="form-group">
+                        <div class="d-flex justify-content-center">
+                            <input type="date" id="dataInput" class="form-control" placeholder="Inserisci la data">
+                        </div>
+                    </div>
+                    <div class="form-group mt-3">
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-outline-secondary" type="button" id="toggleCollapse">
+                                Mostra Dettagli Ordini
+                            </button>
+                            <button class="btn btn-outline-secondary" type="button" id="toggleCollapse2">
+                                Mostra Dettagli Guadagno
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6">
+            <div class="collapse card shadow" id="collapseExample">
+                <div class="card-body" id="collapseContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6">
+            <div class="collapse card shadow" id="collapseExample2">
+                <div class="card-body" id="collapseContent2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $("#toggleCollapse").click(function () {
+                var dataInput = $("#dataInput").val();
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/Admin/TotOrdiniEvasi',
+                    data: { data: dataInput },
+                    dataType: 'json',
+                    success: function (data) {
+                        let content = '<p><strong>Totale degli ordini evasi</strong></p>' +
+                            '<p><strong>' + data.TotaleOrdini + '</strong> ordini</p>';
+
+                        $("#collapseContent").html(content);
+                        $("#collapseExample").collapse('show');
+                    },
+                    error: function (error) {
+                        console.log("Errore durante la chiamata AJAX.");
+                    }
+                });
+            });
+
+            $("#toggleCollapse2").click(function () {
+                var dataInput = $("#dataInput").val();
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/Admin/TotOrdiniEvasi',
+                    data: { data: dataInput },
+                    dataType: 'json',
+                    success: function (data) {
+                        let content = '<p><strong>Totale Guadagnato</strong></p>' +
+                            '<p><strong>' + data.TotalePrezzo + '€' + '</strong></p>';
+
+                        $("#collapseContent2").html(content);
+                        $("#collapseExample2").collapse('show');
+                    },
+                    error: function (error) {
+                        console.log("Errore durante la chiamata AJAX.");
+                    }
+                });
+            });
+        });
+    </script>
+}

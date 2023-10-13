@@ -1,0 +1,227 @@
+﻿@model IEnumerable<Pizzeria.Models.T_Prodotti>
+@{
+    ViewBag.Title = "Index";
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<div>
+    <img style="width:100%" class="mb-3" src="~/Content/img/—Pngtree—seafood vegetable pizza gourmet background_1082198.jpg" />
+</div>
+<div class="container mt-4">
+    <div class="row">
+
+        <div class="col-md-12">
+            <h1 class="display-4 text-center"> IL Nostro Menù</h1>
+            <p class="lead text-center">Scegli le tue pizze preferite</p>
+        </div>
+        <div class="row mt-3 mb-3">
+            <div class="col-md-12">
+                <div class="text-center">
+                    <button class="btn btn-outline-danger btn-lg" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                        Visualizza Carrello
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        @foreach (Pizzeria.Models.T_Prodotti p in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shadow d-flex flex-column" style="height: 550px; ">
+                    <img src="~/Content/Img/@p.Foto" class="card-img-top h-50" alt="@p.Nome">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div>
+                            <h5 class="card-title">@p.Nome</h5>
+                            <p class="card-text">@p.Ingredienti</p>
+                            <p class="card-text"><strong>Prezzo: @string.Format("{0:C}", p.Costo)</strong></p>
+                            <p class="card-text"><strong>Tempo di Consegna: @p.TempoConsegna min</strong></p>
+                        </div>
+                        <form class="pizza-order-form">
+                            <input type="hidden" name="pizzaId" value="@p.IdProdotto" />
+                            <input type="hidden" name="price" value="@p.Costo" />
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label class="mb-0">Quantità:</label>
+                                <input type="number" class="form-control pizza-quantity w-50" value="1" min="1" />
+                                <button type="button" class="btn btn-outline-success mx-1 order-button">
+                                    <i class="bi bi-cart-plus"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+    
+</div>
+
+<a href="#"> TORNA SU</a>
+<!-- Off Canvas Cart -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasRightLabel">Carrello</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Chiudi"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div id="order-summary">
+            <h3>Riepilogo Carrello:</h3>
+            <table class="table table-striped text-center">
+                <thead>
+                    <tr>
+                        <th>Pizza</th>
+                        <th>Prezzo</th>
+                        <th>Quantità</th>
+                        <th>Totale</th>
+                    </tr>
+                </thead>
+                <tbody id="order-summary-body"></tbody>
+            </table>
+            <p><strong>Totale Carrello: <span id="total-cart-price"></span></strong></p>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="nota">Nota:</label>
+            <input type="text" name="nota" class="form-control nota" placeholder="Inserisci una nota" />
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="indirizzo">Indirizzo di consegna:</label>
+            <input type="text" name="indirizzo" class="form-control indirizzo" placeholder="Inserisci l'indirizzo" />
+        </div>
+
+        <button id="complete-order-button" class="btn btn-success mt-3">
+            Concludi Ordine
+        </button>
+        <button id="clear-cart-button" class="btn btn-danger mt-3">
+            Svuota Carrello
+        </button>
+    </div>
+</div>
+
+
+@section scripts {
+
+    <script>
+        $(document).ready(function () {
+
+            // Salva gli order details dentro un session storage
+            let orderDetails = JSON.parse(sessionStorage.getItem("Cart")) || [];
+
+            if (orderDetails.length > 0) {
+                displayOrderSummary(orderDetails);
+            }
+
+            $(".order-button").click(function () {
+                let form = $(this).closest(".pizza-order-form");
+                let pizzaId = form.find("input[name='pizzaId']").val();
+                let quantity = form.find(".pizza-quantity").val();
+                let price = form.find("input[name='price']").val();
+                let pizzaName = $(this).closest(".card-body").find(".card-title").text();
+
+                let existingPizza = orderDetails.find(item => item.pizzaId === pizzaId);
+
+                if (existingPizza) {
+          
+                    existingPizza.quantity = parseInt(existingPizza.quantity) + parseInt(quantity);
+                } else {
+                  
+                    orderDetails.push({
+                        pizzaId: pizzaId,
+                        quantity: quantity,
+                        price: price,
+                        pizzaName: pizzaName
+                    });
+                }
+
+                // Salva nel session storage
+                sessionStorage.setItem("Cart", JSON.stringify(orderDetails));
+
+                displayOrderSummary(orderDetails);
+            });
+
+            function displayOrderSummary(orderDetails) {
+                var tableBody = $("#order-summary-body");
+                tableBody.empty(); // Cancella eventuali righe precedenti
+ 
+               var totalCartPrice = 0;
+
+                for (var i = 0; i < orderDetails.length; i++) {
+                    var formattedPrice = parseFloat(orderDetails[i].price).toLocaleString('it-IT', { style: 'currency', currency: 'EUR' });
+                    var totalPrice = (parseFloat(orderDetails[i].price) * orderDetails[i].quantity).toLocaleString('it-IT', { style: 'currency', currency: 'EUR' });
+
+                    var tableRow = "<tr><td>" + orderDetails[i].pizzaName + "</td>" +
+                        "<td>" + formattedPrice + "</td>" +
+                        "<td>" + orderDetails[i].quantity + "</td>" +
+                        "<td>" + totalPrice + "</td></tr>";
+
+                    tableBody.append(tableRow);
+
+
+                    totalCartPrice +=orderDetails[i].quantity * parseFloat(orderDetails[i].price);
+                }
+
+                let formattedTotalCartPrice = totalCartPrice.toLocaleString('it-IT', { style: 'currency', currency: 'EUR' });
+                $("#total-cart-price").text(formattedTotalCartPrice);
+            }
+
+
+            $("#complete-order-button").click(function () {
+                let pizzaIds = [];
+                let quantities = [];
+                let prices = [];
+                let note = $(".nota").val();
+                let address = $(".indirizzo").val();
+                let totalCartPrice = calculateTotalCartPrice(orderDetails);
+                for (let i = 0; i < orderDetails.length; i++) {
+                    pizzaIds.push(orderDetails[i].pizzaId);
+                    quantities.push(orderDetails[i].quantity);
+                    prices.push(orderDetails[i].price);
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "Home/Index",
+                    data: { pizzaIds: pizzaIds, quantities: quantities, prices: prices, nota: note, indirizzo: address, totalCartPrice: totalCartPrice },
+                    traditional: true,
+                    success: function (response) {
+
+                        $("#order-summary").html("");
+                        orderDetails = [];
+                        $(".nota").val("");
+                        $(".indirizzo").val("");
+                        sessionStorage.removeItem("Cart");
+                    },
+                    error: function (error) {
+
+                    }
+                });
+            });
+
+            function calculateTotalCartPrice(orderDetails) {
+                let totalCartPrice = 0;
+
+                for (let i = 0; i < orderDetails.length; i++) {
+                    totalCartPrice += orderDetails[i].quantity * parseFloat(orderDetails[i].price);
+                }
+
+                return totalCartPrice;
+            }
+
+            $("#clear-cart-button").click(function () {
+
+                orderDetails = [];
+                sessionStorage.removeItem("Cart");
+
+
+                $("#order-summary-body").empty();
+                $("#total-cart-price").text("");
+
+
+                $(".nota").val("");
+                $(".indirizzo").val("");
+            })
+        });
+
+    </script>
+}

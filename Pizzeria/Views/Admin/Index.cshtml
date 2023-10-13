@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Pizzeria.Models.T_Prodotti>
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="container mt-4">
+    <div class="text-center mb-3">
+        <h2 class="text-center">Lista di Pizze nel Menù</h2>
+        <div class="d-flex justify-content-between w-75 mt-3 mx-auto">
+            <a href="@Url.Action("Create")" class="btn btn-outline-dark">Crea una nuova pizza</a>
+            <a href="@Url.Action("Lista")" class="btn btn-outline-dark">Visualizza lista ordini</a>
+            <a href="@Url.Action("Ricerca")" class="btn btn-outline-dark">Ricerca Avanzata</a>
+        </div>
+    </div>
+
+  
+
+    <table class="table table-bordered table-striped table-hover mx-auto text-center w-75">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">ID Pizza</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Prezzo</th>
+                <th scope="col">Modifica</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pizza in Model)
+            {
+                <tr>
+                    <td>@pizza.IdProdotto</td>
+                    <td>@pizza.Nome</td>
+                    <td>@string.Format("{0:C}", pizza.Costo)</td>
+                    <td>
+                        <a href="@Url.Action("Modifica", new { id = pizza.IdProdotto })" class="btn btn-warning">Modifica</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

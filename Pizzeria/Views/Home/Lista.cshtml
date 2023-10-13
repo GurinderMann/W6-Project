@@ -1,0 +1,40 @@
+﻿@model List<Pizzeria.Models.T_Ordine>
+
+@{
+    ViewBag.Title = "Lista";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center">Lista Ordini</h2>
+    <table class="table table-bordered table-striped table-hover mx-auto text-center w-75">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">ID Ordine</th>
+                <th scope="col">Data Ordine</th>
+                <th scope="col">Stato</th>
+                <th scope="col">Totale</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ordine in Model)
+            {
+                <tr>
+                    <td>@ordine.IdOrdine</td>
+                    <td>@ordine.DataOrdine</td>
+                    @if (ordine.Evaso == true)
+                    {
+
+
+                        <td>  L'ordine è in consegna</td>
+                    }
+                    else
+                    {
+                        <td> L' ordine è in fase di preparazione</td>
+                    }
+
+                    <td>@string.Format("{0:C}", ordine.Totale)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
